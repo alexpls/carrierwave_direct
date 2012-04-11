@@ -50,6 +50,10 @@ module CarrierWaveDirect
     def acl
       fog_public ? 'public-read' : 'private'
     end
+    
+    def content_type
+      @content_type ||= ''
+    end
 
     def policy(options = {})
       options[:expiration] ||= self.class.upload_expiration
@@ -61,6 +65,7 @@ module CarrierWaveDirect
           'conditions' => [
             ["starts-with", "$utf8", ""],
             ["starts-with", "$key", store_dir],
+            ["starts-with", "$Content-Type", ""],
             {"bucket" => fog_directory},
             {"acl" => acl},
             {"success_action_redirect" => success_action_redirect},

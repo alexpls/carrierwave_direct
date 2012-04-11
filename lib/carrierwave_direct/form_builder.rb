@@ -8,6 +8,7 @@ module CarrierWaveDirect
       hidden_field(:aws_access_key_id,               :name => "AWSAccessKeyId") <<
       hidden_field(:acl,                             :name => "acl") <<
       hidden_field(:success_action_redirect,         :name => "success_action_redirect") <<
+      hidden_field(:content_type,                    :name => "Content-Type") <<
       hidden_field(:policy,                          :name => "policy") <<
       hidden_field(:signature,                       :name => "signature") <<
       super

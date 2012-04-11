@@ -29,7 +29,15 @@ module CarrierWaveDirect
         def has_#{column}_upload?
           send(:#{column}).has_key?
         end
-
+        
+        def content_type
+          send(:#{column}).content_type
+        end
+        
+        def content_type=(ct)
+          send(:#{column}).content_type = ct
+        end
+        
         def has_remote_#{column}_net_url?
           send(:remote_#{column}_net_url).present?
         end
@@ -37,4 +45,3 @@ module CarrierWaveDirect
     end
   end
 end
-
