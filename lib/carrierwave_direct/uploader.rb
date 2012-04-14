@@ -10,7 +10,7 @@ module CarrierWaveDirect
     included do
       storage :fog
 
-      attr_accessor :success_action_redirect
+      attr_accessor :success_action_status, :success_action_redirect
 
       fog_credentials.keys.each do |key|
         define_method(key) do
@@ -58,21 +58,28 @@ module CarrierWaveDirect
     def policy(options = {})
       options[:expiration] ||= self.class.upload_expiration
       options[:max_file_size] ||= self.class.max_file_size
-
+      
+      conditions = [
+        ["starts-with", "$utf8", ""],
+        ["starts-with", "$key", store_dir],
+        ["starts-with", "$Content-Type", ""],
+        {"bucket" => fog_directory},
+        {"acl" => acl},
+        ["content-length-range", 1, options[:max_file_size]]
+      ]
+      
+      if success_action_redirect
+        conditions << {"success_action_redirect" => success_action_redirect}
+      else
+        conditions << {"success_action_status" => success_action_status.to_s ||= "201"}
+      end
+      
       Base64.encode64(
         {
           'expiration' => Time.now.utc + options[:expiration],
-          'conditions' => [
-            ["starts-with", "$utf8", ""],
-            ["starts-with", "$key", store_dir],
-            ["starts-with", "$Content-Type", ""],
-            {"bucket" => fog_directory},
-            {"acl" => acl},
-            {"success_action_redirect" => success_action_redirect},
-            ["content-length-range", 1, options[:max_file_size]]
-          ]
-        }.to_json
-      ).gsub("\n","")
+          'conditions' => conditions
+          }.to_json
+      ).gsub("\n", "")
     end
 
     def signature

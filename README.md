@@ -124,7 +124,10 @@ things just got a whole lot easier. You can generate a direct upload form like t
     class AvatarController < ApplicationController
       def new
         @uploader = User.new.avatar
+        # S3 can redirect you to a URL
         @uploader.success_action_redirect = new_user_url
+        # Or it can return a response code of your choice
+        @uploader.success_action_status = 201
       end
     end
 
